@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include<stdlib.h>
-
-
 typedef struct bstN{
 	int data;
 	struct bstN *dir, *esq;
@@ -14,30 +12,7 @@ bstN *novoNodo(int data){
 	novo->esq=NULL;
 	return novo;
 }
-
-void preOrder(bstN *root){
-	if(root==NULL)
-		return;
-	printf("%d\n",root->data);
-	preOrder(root->esq);
-	preOrder(root->dir);
-}
-void inOrder(bstN *root){
-	if(root==NULL)
-		return;
-
-	inOrder(root->esq);
-	printf("%d\n",root->data);
-	inOrder(root->dir);
-}
-void postOrder(bstN *root){
-	if(root==NULL)
-		return;
-	postOrder(root->esq);
-	postOrder(root->dir);
-	printf("%d\n",root->data);
-}
-void insere(bstN **root){
+void inserir(bstN **root){
 	int data;
 	printf("\nDigite o número que você quer inserir: ");
 	scanf("%d", &data);
@@ -64,62 +39,84 @@ void insere(bstN **root){
 		}
 	}
 }
-void buscmin(bstN *subt, bstN **essa){
-	bstN *essa2=*essa;
+void preOr(bstN *raiz){
+	if(raiz==NULL)
+		return;
+	printf("%d\n",raiz->data);
+	preOr(raiz->esq);
+	preOr(raiz->dir);
+}
+void inOr(bstN *raiz){
+	if(raiz==NULL)
+		return;
+
+	inOr(raiz->esq);
+	printf("%d\n",raiz->data);
+	inOr(raiz->dir);
+}
+void postOr(bstN *raiz){
+	if(raiz==NULL)
+		return;
+	postOr(raiz->esq);
+	postOr(raiz->dir);
+	printf("%d\n",raiz->data);
+}
+void buscmin(bstN *subt, bstN **achei){
+	bstN *achei2=*achei;
 	if(subt!=NULL){
-		if(essa2->data > subt->data){
-			*essa=subt;
+		if(achei2->data > subt->data){
+			*achei=subt;
 			return;
 		}
-		buscmin(subt->esq,essa);
-		buscmin(subt->dir,essa);
+		buscmin(subt->esq,achei);
+		buscmin(subt->dir,achei);
 	}
 }
-void busc(bstN *root,int data, bstN **essa){
-	if(root!=NULL){
-		if(root->data==data){
-			*essa=root;
-			printf("O nodo com o número %d esta na arvore e seu endereço é %d\n", root->data,&root);
+void busc(bstN *raiz,int data, bstN **achei){
+	if(raiz!=NULL){
+		if(raiz->data==data){
+			*achei=raiz;
+			printf("O nodo com o número %d esta na arvore e seu endereço é %d\n", raiz->data,&raiz);
 			return;
 		}
-		busc(root->esq,data,essa);
-		busc(root->dir,data,essa);
-	}
+		busc(raiz->esq,data,achei);
+		busc(raiz->dir,data,achei);
+}
 }
 
-bstN *deletar(bstN *root, int data){
-	if(root==NULL)
-		return root;
-	else if(root->data>data)
-		root->esq=deletar(root->esq,data);
-	else if(root->data<data)
-		root->dir=deletar(root->dir,data);
+
+bstN *deletar(bstN *raiz, int data){
+	if(raiz==NULL)
+		return raiz;
+	else if(raiz->data>data)
+		raiz->esq=deletar(raiz->esq,data);
+	else if(raiz->data<data)
+		raiz->dir=deletar(raiz->dir,data);
 	else{
-			if(root->esq == NULL && root->dir==NULL){
-				free(root);
-				root=NULL;
-			}else if(root->esq==NULL){
-				bstN *aux=root;
-				root=root->dir;
+			if(raiz->esq == NULL && raiz->dir==NULL){
+				free(raiz);
+				raiz=NULL;
+			}else if(raiz->esq==NULL){
+				bstN *aux=raiz;
+				raiz=raiz->dir;
 				free(aux);
 			}else{
-				bstN *aux=root->dir;
-				buscmin(root->dir, &aux);
-				root->data=aux->data;
-				root->dir=deletar(root->dir,aux->data);
+				bstN *aux=raiz->dir;
+				buscmin(raiz->dir, &aux);
+				raiz->data=aux->data;
+				raiz->dir=deletar(raiz->dir,aux->data);
 			}
 	}
-	return root;
+	return raiz;
 }
-
 int main(){
 	bstN *root=NULL;
 	bstN *aux=NULL;
 	int escolha;
 
 	do {		
-		printf("\n 1-Inserir nodo na Árvore\n 2-Deletar nodo da Árvore\n 3-Buscar\n 4-PreOrder\n 5-InOrder\n 6-PostOrder\n 0-Sair\nEscolha uma opção: ");
-		scanf("%d", &escolha);
+		printf("\n 1-Inserir nodo na Árvore\n 2-Deletar nodo da Árvore\n 3-Buscar\n 4-PreOrder\n 5-InOrder\n 6-PostOrder\n 0-Sair\nEscolha sua opção: ");
+		scanf("%d",&escolha );
 		aux=NULL;
 		switch (escolha) {
 			case 1:
@@ -127,7 +124,7 @@ int main(){
 				break;
 			case 2:
 				if(root==NULL)
-					printf("\nÁrvore está vazia\n");
+					printf("\nÁrvore vazia\n");
 				else{
 					printf("\nDigite o conteúdo do nodo que vai ser deletar: ");
 					int del;
@@ -142,26 +139,26 @@ int main(){
 				scanf("%d",&buscar );
 				busc(root,buscar,&aux);
 				if(aux==NULL)
-					printf("Número não está na arvore\n");
+					printf("Número não esta na arvore\n");
 				break;
 
 			case 4:
 				if(root==NULL)
-					printf("\nÁrvore está vazia\n");
+					printf("\nÁrvore vazia\n");
 				else
-					preOrder(root);
+					preOr(root);
 				break;
 			case 5:
 				if(root==NULL)
-					printf("\nÁrvore está vazia\n");
+					printf("\nÁrvore vazia\n");
 				else
-			 		inOrder(root);
+			 		inOr(root);
 				break;
 			case 6:
 				if(root==NULL)
-					printf("\nÁrvore está vazia\n");
+					printf("\nÁrvore vazia\n");
 				else
-				postOrder(root);
+				postOr(root);
 				break;
 			default:
 				break;
